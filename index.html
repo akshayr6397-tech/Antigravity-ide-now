@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstroCal Tracker — Cosmic Event Tracker | Your Gateway to the Universe</title>
+  <meta name="description" content="Never miss a celestial event again. Track upcoming meteor showers, solar eclipses, planetary alignments, and supermoons with real-time visibility maps and Google Calendar sync.">
+  <meta name="theme-color" content="#030508">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Background Interactive Starfield & Meteor Canvas -->
+  <canvas id="cosmic-starfield" class="cosmic-canvas-bg"></canvas>
+
+  <!-- Ambient Deep Space Nebular Lighting -->
+  <div class="space-nebula nebula-1"></div>
+  <div class="space-nebula nebula-2"></div>
+  <div class="space-nebula nebula-3"></div>
+
+  <!-- Main Navigation Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <!-- Minimalist Logo: Shooting Star orbiting Calendar Globe -->
+      <a href="#hero" class="brand-logo">
+        <div class="logo-orbit-wrap">
+          <div class="logo-calendar-icon">📅</div>
+          <div class="logo-orbit-ring">
+            <span class="orbiting-star">✦</span>
+          </div>
+        </div>
+        <div class="brand-text-block">
+          <div class="brand-name">ASTROCAL <span class="brand-accent">TRACKER</span></div>
+          <div class="brand-tagline">Your Gateway to the Universe</div>
+        </div>
+      </a>
+
+      <!-- Live Celestial Clock -->
+      <div class="header-clock-pill" id="header-celestial-clock">
+        <span class="clock-icon">⏱️</span> 00:00:00 Local | 00:00:00 UTC
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-links">
+        <a href="#events-dashboard" class="nav-item">
+          <span>📅</span> Events Timeline
+        </a>
+        <a href="#sky-map-section" class="nav-item">
+          <span>🌍</span> Sky Visibility Map
+        </a>
+        <a href="#mobile-mockup-section" class="nav-item">
+          <span>📱</span> Mobile App
+        </a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="header-actions">
+        <!-- Deep Space Sound Toggle -->
+        <button class="btn-icon-pill" id="btn-space-audio" title="Toggle Deep Space Ambient Audio (M)">
+          <span class="audio-pulse-waves">
+            <span class="p-bar"></span>
+            <span class="p-bar"></span>
+            <span class="p-bar"></span>
+          </span>
+          <span class="btn-text-hide">Sound</span>
+        </button>
+
+        <!-- Notification Center Bell -->
+        <button class="btn-icon-pill notif-bell-btn" id="btn-notif-drawer" title="Celestial Event Alerts (N)">
+          <span class="bell-icon">🔔</span>
+          <span class="notif-badge" id="notif-badge-count">2</span>
+        </button>
+
+        <!-- User Profile / Sign In Container -->
+        <div id="header-user-container" class="header-user-wrap"></div>
+
+        <!-- Stargaze CTA -->
+        <a href="#events-dashboard" class="btn-primary-sm">
+          <span>☄️</span> Track Events
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- In-App Notification Center Drawer -->
+  <aside id="notif-drawer" class="notif-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <span class="drawer-icon">🔔</span>
+        <h3>Celestial Alerts & Broadcasts</h3>
+      </div>
+      <button class="btn-close-drawer" id="btn-close-notif">&times;</button>
+    </div>
+
+    <div class="drawer-body" id="notif-list-container">
+      <!-- Dynamically filled with notifications -->
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn-secondary-full" id="btn-test-alert">
+        <span>🔔</span> Request Desktop Notification
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Platform Content -->
+  <main class="main-content">
+
+    <!-- HERO SECTION -->
+    <section class="section hero-section" id="hero">
+      <div class="section-container hero-container">
+        <div class="hero-content">
+          <div class="cosmic-pill-tag">
+            <span class="pulse-emerald"></span> Real-Time Astronomical Ephemeris v3.2
+          </div>
+
+          <h1 class="hero-headline">
+            Never Miss a <br>
+            <span class="gradient-text-starlight">Celestial Event</span> Again.
+          </h1>
+
+          <p class="hero-tagline">
+            Track major meteor showers, total solar eclipses, planetary alignments, and supermoons. Calculate precise location-based visibility zones and sync 1-click reminders directly with Google Calendar & Apple/Outlook.
+          </p>
+
+          <!-- CTA Buttons -->
+          <div class="hero-cta-row">
+            <button class="btn-primary-lg" id="btn-hero-track">
+              <span class="btn-sparkle">✦</span> Track Upcoming Events
+            </button>
+            <button class="btn-secondary-lg" id="btn-hero-skymap">
+              <span>🌍</span> Interactive Sky Map
+            </button>
+            <button class="btn-glass-lg" id="btn-hero-meteor" onclick="window.app.canvas.spawnMeteorBurst(window.innerWidth/2, window.innerHeight/3); window.app.showToast('☄️ Meteor Fireball Unleashed!');">
+              <span>☄️</span> Fireball Burst <kbd class="kbd-sm">Space</kbd>
+            </button>
+          </div>
+
+          <!-- Quick Celestial Metrics Ticker -->
+          <div class="hero-metrics-ticker">
+            <div class="metric-box">
+              <span class="m-val" id="stat-next-name">Perseids Peak</span>
+              <span class="m-sub">Next Major Event (6 Days)</span>
+            </div>
+            <div class="metric-divider"></div>
+            <div class="metric-box">
+              <span class="m-val">100–120 / hr</span>
+              <span class="m-sub">Expected Meteor Zenith Rate</span>
+            </div>
+            <div class="metric-divider"></div>
+            <div class="metric-box">
+              <span class="m-val highlight-cyan">96% Clear Sky</span>
+              <span class="m-sub">Pune & Global Visibility</span>
+            </div>
+            <div class="metric-divider"></div>
+            <div class="metric-box">
+              <span class="m-val">Bortle 1–4</span>
+              <span class="m-sub">Optimal Dark Sky Rating</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE COUNTDOWN BANNER -->
+    <section class="countdown-banner-section">
+      <div class="section-container">
+        <div class="countdown-bar glass-card">
+          <div class="countdown-left">
+            <div class="countdown-badge">
+              <span class="pulse-beacon"></span> LIVE COUNTDOWN
+            </div>
+            <div class="countdown-event-name">
+              <h3>Perseid Meteor Shower Zenith Peak</h3>
+              <p>Radiant: Constellation Perseus · Optimal Viewing Window: 9:00 PM – 4:30 AM</p>
+            </div>
+          </div>
+
+          <div class="countdown-timer-group">
+            <div class="time-block">
+              <span class="time-number" id="count-days">06</span>
+              <span class="time-unit">DAYS</span>
+            </div>
+            <span class="time-colon">:</span>
+            <div class="time-block">
+              <span class="time-number" id="count-hours">18</span>
+              <span class="time-unit">HOURS</span>
+            </div>
+            <span class="time-colon">:</span>
+            <div class="time-block">
+              <span class="time-number" id="count-mins">24</span>
+              <span class="time-unit">MINS</span>
+            </div>
+            <span class="time-colon">:</span>
+            <div class="time-block">
+              <span class="time-number" id="count-secs">45</span>
+              <span class="time-unit">SECS</span>
+            </div>
+          </div>
+
+          <div class="countdown-right">
+            <button class="btn-primary-sm" onclick="window.app.openEventDetail('perseids-2026')">
+              <span>📅</span> Set 1-Click Reminder
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CELESTIAL EVENT DASHBOARD & TIMELINE -->
+    <section class="section events-dashboard-section" id="events-dashboard">
+      <div class="section-container">
+        <div class="section-header-split">
+          <div>
+            <div class="section-tag-gold">
+              <span>📅</span> CELESTIAL TIMELINE & EPHEMERIS
+            </div>
+            <h2 class="section-heading">Upcoming Celestial Events</h2>
+            <p class="section-subtext">
+              Real-time schedule of planetary conjunctions, eclipses, meteor showers, and spacecraft transits with exact radiant coordinates and observation guides.
+            </p>
+          </div>
+
+          <!-- View Switcher (Timeline vs Grid) -->
+          <div class="view-switcher-group">
+            <button class="view-btn active" id="btn-view-timeline" title="Horizontal Interactive Timeline">
+              <span>≋</span> Timeline View
+            </button>
+            <button class="view-btn" id="btn-view-grid" title="Cards Grid View">
+              <span>⊞</span> Grid View
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Controls Bar -->
+        <div class="filters-toolbar glass-card">
+          <div class="filter-pills-wrap">
+            <button class="filter-pill active" data-category="all">All Events</button>
+            <button class="filter-pill" data-category="meteor-shower">☄️ Meteor Showers</button>
+            <button class="filter-pill" data-category="eclipse">🌑 Eclipses</button>
+            <button class="filter-pill" data-category="planetary">🪐 Planetary Alignments</button>
+            <button class="filter-pill" data-category="supermoon">🌕 Supermoons</button>
+            <button class="filter-pill" data-category="satellite">🛰️ ISS Transits</button>
+          </div>
+
+          <div class="search-box-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="event-search-input" placeholder="Search event, radiant, or constellation..." autocomplete="off">
+          </div>
+        </div>
+
+        <!-- 1. Horizontal Timeline View Container -->
+        <div class="events-timeline-container" id="events-timeline-view">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- 2. Grid View Container (Hidden by default) -->
+        <div class="events-grid-container" id="events-grid-view" style="display: none;">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE SKY MAP & LOCATION VISIBILITY SECTION -->
+    <section class="section sky-map-section" id="sky-map-section">
+      <div class="section-container">
+        <div class="section-header-split">
+          <div>
+            <div class="section-tag-cyan">
+              <span>🌍</span> LOCATION INTEGRATION & CELESTIAL COMPASS
+            </div>
+            <h2 class="section-heading">Interactive Sky Visibility Map</h2>
+            <p class="section-subtext">
+              Projected celestial hemisphere showing exact radiant angles, elevation above horizon, and local Bortle light pollution ratings for your observation site.
+            </p>
+          </div>
+        </div>
+
+        <div class="sky-map-layout-grid">
+          <!-- Sky Dome Canvas Projection Card -->
+          <div class="sky-dome-card glass-card">
+            <div class="dome-card-header">
+              <div class="dome-title-group">
+                <span class="radar-ping"></span>
+                <div>
+                  <h3 class="dome-card-title">Celestial Polar Dome Projection</h3>
+                  <p class="dome-card-sub" id="sky-coords-val">Lat: 18.52° | Lon: 73.86° (Zenith: 90° Overhead)</p>
+                </div>
+              </div>
+              <span class="bortle-pill" id="sky-bortle-val">Bortle Class 5 · Elev: 560m</span>
+            </div>
+
+            <!-- Canvas Element for Celestial Dome -->
+            <div class="sky-canvas-wrapper">
+              <canvas id="sky-dome-canvas" class="sky-dome-canvas"></canvas>
+            </div>
+
+            <div class="dome-card-legend">
+              <span class="legend-item"><span class="leg-dot cyan"></span> Perseids Radiant (48° NE)</span>
+              <span class="legend-item"><span class="leg-dot purple"></span> Planetary Arc (52° SE)</span>
+              <span class="legend-item"><span class="leg-dot green"></span> ISS Flight Path (79° Max)</span>
+            </div>
+          </div>
+
+          <!-- Location Selector & Viewing Parameters Panel -->
+          <div class="sky-params-panel glass-card">
+            <div class="panel-header">
+              <span class="panel-icon">🧭</span>
+              <div>
+                <h3 class="panel-title">Observer Site & Sky Conditions</h3>
+                <p class="panel-sub">Select your stargazing location</p>
+              </div>
+            </div>
+
+            <!-- Location Dropdown -->
+            <div class="location-select-wrap">
+              <label for="sky-location-select">Observation Site / City</label>
+              <select id="sky-location-select" class="custom-sky-select">
+                <!-- Dynamically populated (Pune, Tokyo, London, etc.) -->
+              </select>
+            </div>
+
+            <!-- Sky Quality Metrics -->
+            <div class="sky-quality-grid">
+              <div class="quality-card">
+                <span class="q-label">Current Site</span>
+                <span class="q-val highlight-cyan" id="sky-loc-name">Pune, India</span>
+                <span class="q-sub">Timezone: IST (UTC+5:30)</span>
+              </div>
+              <div class="quality-card">
+                <span class="q-label">Moon Interference</span>
+                <span class="q-val">12% Waning</span>
+                <span class="q-sub">Dark Sky Index: Excellent</span>
+              </div>
+              <div class="quality-card">
+                <span class="q-label">Cloud Cover (Sim)</span>
+                <span class="q-val highlight-green">4% Clear</span>
+                <span class="q-sub">Atmosphere Transparency 98%</span>
+              </div>
+              <div class="quality-card">
+                <span class="q-label">Nautical Twilight</span>
+                <span class="q-val">19:15 – 05:10</span>
+                <span class="q-sub">True Dark Window: 7.9 hrs</span>
+              </div>
+            </div>
+
+            <!-- Stargazing Kit Advice Box -->
+            <div class="stargaze-advice-box">
+              <div class="advice-header">
+                <span>💡</span> Recommended Setup for Tonight
+              </div>
+              <p>
+                No telescope required for tonight's meteor shower. Position yourself facing <strong>Northeast</strong> after 9:30 PM with a wide unobstructed view. Let eyes dark-adapt for 25 minutes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOBILE PROTOTYPE & APP PREVIEW SANDBOX -->
+    <section class="section mobile-preview-section" id="mobile-mockup-section">
+      <div class="section-container">
+        <div class="section-header-split">
+          <div>
+            <div class="section-tag-emerald">
+              <span>📱</span> MOBILE INTERFACE & NOTIFICATION SANDBOX
+            </div>
+            <h2 class="section-heading">AstroCal Tracker Mobile Companion</h2>
+            <p class="section-subtext">
+              Interactive prototype showcasing the dark-mode mobile experience with swipeable celestial cards and simulated instant push notifications.
+            </p>
+          </div>
+        </div>
+
+        <div class="mobile-mockup-showcase">
+          <!-- Left: Feature Bullet Points -->
+          <div class="mobile-features-desc">
+            <div class="m-feat-card glass-card">
+              <div class="m-feat-icon">🔔</div>
+              <div>
+                <h4>Smart Proximity Alerts</h4>
+                <p>Receives automated notifications 2 hours before an event peaks over your exact GPS coordinates.</p>
+              </div>
+            </div>
+
+            <div class="m-feat-card glass-card">
+              <div class="m-feat-icon">🧭</div>
+              <div>
+                <h4>AR Sky Pointer</h4>
+                <p>Point your phone camera to the sky to align directly with meteor radiants and planetary coordinates.</p>
+              </div>
+            </div>
+
+            <div class="m-feat-card glass-card">
+              <div class="m-feat-icon">📅</div>
+              <div>
+                <h4>Zero-Latency Calendar Sync</h4>
+                <p>1-tap integration with Google Calendar, Apple iCal, and Outlook with customized notification alarms.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Center: Interactive Smartphone Frame Device -->
+          <div class="smartphone-frame-wrapper">
+            <div class="smartphone-frame">
+              <!-- Speaker & Camera Dynamic Notch -->
+              <div class="phone-notch">
+                <div class="notch-speaker"></div>
+                <div class="notch-lens"></div>
+              </div>
+
+              <!-- Phone Screen Content -->
+              <div class="phone-screen">
+                <!-- Push Notification Banner (Simulated) -->
+                <div class="mobile-push-banner" id="mobile-push-preview">
+                  <div class="m-push-icon">☄️</div>
+                  <div class="m-push-text">
+                    <div class="m-push-header">
+                      <strong>AstroCal Tracker Alert</strong>
+                      <span>now</span>
+                    </div>
+                    <div class="m-push-body">Perseids Meteor Shower peaks tonight in Pune! Tap to view sky map.</div>
+                  </div>
+                </div>
+
+                <!-- Phone App Header -->
+                <div class="phone-app-header">
+                  <div>
+                    <span class="p-sub">Observation Site</span>
+                    <h4 class="p-city">Pune, India 📍</h4>
+                  </div>
+                  <button class="p-bell-btn">🔔</button>
+                </div>
+
+                <div class="phone-section-title">TODAY'S CELESTIAL HIGHLIGHTS</div>
+
+                <!-- Swipeable Mobile Event Cards Slider -->
+                <div class="mobile-events-slider" id="mobile-events-slider">
+                  <!-- Dynamically populated -->
+                </div>
+
+                <div class="phone-section-title">QUICK SKY RADAR</div>
+                <div class="mobile-mini-radar">
+                  <span class="radar-dot dot-1"></span>
+                  <span class="radar-dot dot-2"></span>
+                  <span class="radar-dot dot-3"></span>
+                  <div class="radar-center-text">Zenith: Clear</div>
+                </div>
+
+                <!-- Phone Bottom Navigation Bar -->
+                <div class="phone-bottom-nav">
+                  <button class="mobile-nav-btn active" data-tab="today">
+                    <span class="m-nav-icon">✦</span>
+                    <span>Today</span>
+                  </button>
+                  <button class="mobile-nav-btn" data-tab="timeline">
+                    <span class="m-nav-icon">📅</span>
+                    <span>Timeline</span>
+                  </button>
+                  <button class="mobile-nav-btn" data-tab="skymap">
+                    <span class="m-nav-icon">🧭</span>
+                    <span>Sky Map</span>
+                  </button>
+                  <button class="mobile-nav-btn" data-tab="alerts">
+                    <span class="m-nav-icon">🔔</span>
+                    <span>Alerts</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- EVENT DETAIL MODAL DIALOG -->
+  <dialog id="event-detail-modal" class="cosmic-modal">
+    <div class="modal-inner glass-card">
+      <button class="btn-modal-close" id="btn-close-modal">&times;</button>
+      <div id="modal-event-body">
+        <!-- Dynamically rendered detailed content with Google Calendar & .ics download buttons -->
+      </div>
+    </div>
+  </dialog>
+
+  <!-- COSMIC AUTHENTICATION & LOGIN/SIGN-UP MODAL -->
+  <dialog id="auth-modal" class="cosmic-modal auth-modal">
+    <div class="modal-inner glass-card auth-modal-card">
+      <button class="btn-modal-close" id="btn-close-auth">&times;</button>
+
+      <div class="auth-header-block">
+        <div class="auth-brand-badge">✦ ASTROCAL GATEWAY</div>
+        <h2 class="auth-modal-title">Enter the Cosmic Observatory</h2>
+        <p class="auth-modal-sub">Sign in to save astronomical events, sync calendar reminders, and customize your sky station.</p>
+      </div>
+
+      <!-- 1-Click Demo Credentials Quick Launcher -->
+      <div class="demo-credentials-box">
+        <div class="demo-box-top">
+          <div class="demo-badge">🚀 1-CLICK DEMO ACCESS</div>
+          <button type="button" class="btn-demo-quick-action" id="btn-demo-quick-auth">
+            <span>⚡</span> Quick Launch Demo (Stargazer Pro)
+          </button>
+        </div>
+        <div class="demo-creds-details">
+          <span><strong>Email:</strong> <code>stargazer@astrocal.space</code></span>
+          <span><strong>Password:</strong> <code>cosmic2026</code></span>
+        </div>
+      </div>
+
+      <div class="auth-divider-line">
+        <span>OR SIGN IN WITH CREDENTIALS</span>
+      </div>
+
+      <!-- Auth Tab Switcher -->
+      <div class="auth-tabs-group">
+        <button type="button" class="auth-tab-btn active" id="tab-signin">Sign In</button>
+        <button type="button" class="auth-tab-btn" id="tab-signup">Create Account</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="form-signin" class="auth-form-body">
+        <div class="form-group">
+          <label for="signin-email">Stargazer Email Address</label>
+          <div class="input-with-icon">
+            <span class="field-icon">✉️</span>
+            <input type="email" id="signin-email" placeholder="stargazer@astrocal.space" required autocomplete="email" value="stargazer@astrocal.space">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-split">
+            <label for="signin-password">Security Passcode</label>
+            <button type="button" class="btn-toggle-eye" id="btn-toggle-pass-visibility" title="Toggle Visibility">👁️</button>
+          </div>
+          <div class="input-with-icon">
+            <span class="field-icon">🔒</span>
+            <input type="password" id="signin-password" placeholder="••••••••" required autocomplete="current-password" value="cosmic2026">
+          </div>
+        </div>
+
+        <div class="form-options-row">
+          <label class="checkbox-container">
+            <input type="checkbox" id="remember-me" checked>
+            <span class="checkmark"></span>
+            <span>Remember My Sky Station</span>
+          </label>
+        </div>
+
+        <div class="auth-error-message" id="signin-error-msg" style="display: none;"></div>
+
+        <button type="submit" class="btn-primary-lg auth-submit-btn">
+          <span>🚀</span> Enter Stargazer Portal
+        </button>
+      </form>
+
+      <!-- Create Account Form (Hidden by default) -->
+      <form id="form-signup" class="auth-form-body" style="display: none;">
+        <div class="form-group">
+          <label for="signup-name">Your Astronomer / Stargazer Name</label>
+          <div class="input-with-icon">
+            <span class="field-icon">🧑‍🚀</span>
+            <input type="text" id="signup-name" placeholder="e.g. Alex Chen" required autocomplete="name">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signup-email">Email Address</label>
+          <div class="input-with-icon">
+            <span class="field-icon">✉️</span>
+            <input type="email" id="signup-email" placeholder="name@domain.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signup-password">Create Security Passcode</label>
+          <div class="input-with-icon">
+            <span class="field-icon">🔒</span>
+            <input type="password" id="signup-password" placeholder="At least 4 characters" required minlength="4" autocomplete="new-password">
+          </div>
+        </div>
+
+        <div class="auth-error-message" id="signup-error-msg" style="display: none;"></div>
+
+        <button type="submit" class="btn-primary-lg auth-submit-btn">
+          <span>✦</span> Create Free Stargazer Account
+        </button>
+      </form>
+
+      <!-- Social Logins -->
+      <div class="social-login-grid">
+        <button type="button" class="btn-social-auth" id="btn-auth-google">
+          <span>🌐</span> Google Stargazer
+        </button>
+        <button type="button" class="btn-social-auth" id="btn-auth-github">
+          <span>🐙</span> GitHub Astro
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- GLOBAL TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand-col">
+        <div class="footer-logo">
+          <span class="footer-logo-icon">✦</span>
+          <span class="footer-logo-text">ASTROCAL TRACKER</span>
+        </div>
+        <p class="footer-mission">
+          Your Gateway to the Universe. Precision astronomical tracking, celestial ephemeris computations, and automated stargazing alerts.
+        </p>
+        <div class="footer-badge">Powered by NASA JPL Horizons & Skyfield Ephemeris Standards</div>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Celestial Tracking</h4>
+        <a href="#events-dashboard">Meteor Showers</a>
+        <a href="#events-dashboard">Solar & Lunar Eclipses</a>
+        <a href="#events-dashboard">Planetary Alignments</a>
+        <a href="#events-dashboard">ISS Spacecraft Transits</a>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Observation Tools</h4>
+        <a href="#sky-map-section">Polar Sky Dome</a>
+        <a href="#sky-map-section">Bortle Light Pollution Gauge</a>
+        <a href="#mobile-mockup-section">Mobile Application</a>
+        <a href="#notif-drawer">Notification Center</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div class="footer-container bottom-flex">
+        <span>© 2026 AstroCal Tracker Space Systems. Built for stargazers worldwide.</span>
+        <span class="keyboard-tip">Pro-tip: Press <kbd>Space</kbd> for meteors, <kbd>M</kbd> for audio, <kbd>N</kbd> for alerts.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modular Scripts -->
+  <script src="js/events-data.js"></script>
+  <script src="js/cosmic-canvas.js"></script>
+  <script src="js/sky-map.js"></script>
+  <script src="js/notifications-calendar.js"></script>
+  <script src="js/space-audio.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
